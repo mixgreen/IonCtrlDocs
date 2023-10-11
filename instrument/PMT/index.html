@@ -12,13 +12,9 @@
         <meta name="author" content="Green">
       
       
-        <link rel="canonical" href="https://mixgreen.github.io/IonCtrlDocs/instrument/ccb/">
+        <link rel="canonical" href="https://mixgreen.github.io/IonCtrlDocs/instrument/PMT/">
       
       
-        <link rel="prev" href="../369EOM/">
-      
-      
-        <link rel="next" href="../../update/issues/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +22,7 @@
     
     
       
-        <title>CCB - IonCtrl</title>
+        <title>PMT - IonCtrl</title>
       
     
     
@@ -71,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ccbclint-control-broadcasts" class="md-skip">
+        <a href="#pmt" class="md-skip">
           Skip to content
         </a>
       
@@ -107,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CCB
+              PMT
             
           </span>
         </div>
@@ -232,19 +228,17 @@
       
   
   
-    
-  
   
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
@@ -257,7 +251,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Instrument
@@ -288,29 +282,9 @@
                 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    CCB
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../ccb/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -319,40 +293,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-why-ccb" class="md-nav__link">
-    1. Why CCB?
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    2. 如何实现？
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -473,15 +413,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-why-ccb" class="md-nav__link">
-    1. Why CCB?
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    2. 如何实现？
+  <a href="#abstract" class="md-nav__link">
+    Abstract
   </a>
   
 </li>
@@ -501,32 +434,11 @@
                   
 
 
-<h1 id="ccbclint-control-broadcasts">CCB(Clint Control Broadcasts)</h1>
-<h2 id="1-why-ccb">1. Why CCB?</h2>
-<ol>
-<li>需求：实验中会碰到给主机发送任务指令的场景，例如每次循环实验要更新一次主机的图像</li>
-<li>现有逻辑：实验涉及仪器的编写逻辑是，core + 多个仪器，每个仪器有自己的行为</li>
-<li>解决需求：创造一个 ccb 虚拟仪器，其主要方法就是跟负责跟 host 通信。目前主要用于调用绘图小组件</li>
-</ol>
-<p><img alt="image.png" src="../assets/CCB.png" /></p>
-<h2 id="2">2. 如何实现？</h2>
-<p>每当在 build 中添加 "ccb" 时，下列虚拟仪器就会被添加为本次实验的属性：</p>
-<pre><code class="language-python">logger = logging.getLogger(__name__)
-
-class DummyCCB:
-    def issue(self, service, *args, **kwargs):
-        logger.info(&quot;CCB for service '%s' (args %s, kwargs %s)&quot;,
-                    service, args, kwargs)
-
-</code></pre>
-<p>该虚拟仪器的唯一方法 issue ，将调用 logger 对象在日志记录器中添加一条 info 级别的信息。</p>
-<p>例如：</p>
-<pre><code class="language-python">self.ccb.issue(&quot;create_applet&quot;, &quot;PMTcounts&quot;, &quot;${artiq_applet}plot_xy PMTcounts --fit PMTcounts&quot;, &quot;Rabicounts 32channel&quot;)
-</code></pre>
-<p>将记录一条</p>
-<pre><code class="language-css">INFO: CCB for service 'create_applet' (args ('PMTcounts', '${artiq_applet}plot_xy PMTcounts --fit PMTcounts', 'Rabicounts 32channel'), kwargs {})
-</code></pre>
-<p>host 中的客户端组件将捕获这条信息，并执行关键字所对应的指令。</p>
+<h1 id="pmt">PMT</h1>
+<p><img alt="image.png" src="../assets/image.png" /></p>
+<h2 id="abstract">Abstract</h2>
+<p>PMT 模块是离子阱系统所有读出信号的来源. 它通过 32 通道的光电倍增管来接收离子发出的荧光, 并生成荧光计数, 保存在 FIFO 缓存区, 供电脑读取.</p>
+<p>具体来说, PMT 模块有一个同轴线用于接收高低电平信号. 每个电平上升沿会开启荧光计数, 每个下降沿关闭荧光计数, 并将 32 通道的荧光计数保存在 FIFO 中. 电脑端每调用一次 read_data 指令, 就会读取 FIFO 中最先的数组. 同时 FIFO 中的相应数组被删除.</p>
 
 
 
