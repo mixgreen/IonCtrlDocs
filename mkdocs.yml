@@ -1,0 +1,24 @@
+site_name: IonCtrl
+
+site_description: Documentation for IonCtrl package.
+
+site_author: Green
+
+site_url: https://mixgreen.github.io/IonCtrlDocs/
+
+theme:
+  name: "material"
+
+nav:
+  - Index: "index.md"
+  - About: "about.md"
+  - Instrument:
+    - 369EOM: "instrument/369EOM.md"
+    - CCB: "instrument/ccb.md"
+    - PMT: "instrument/PMT.md"
+  - Update:
+    - Issues: "update/issues.md"
+    - Undate: "update/update.md"
+
+plugins:
+  - search
